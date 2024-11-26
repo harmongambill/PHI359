@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Living Meaningfully in Virtual Worlds</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1, h2 {
+      color: #2c3e50;
+    }
+    .section {
+      display: none;
+    }
+    .visible {
+      display: block;
+    }
+    .lesson-part {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      background-color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .lesson-part:hover {
+      transform: scale(1.02);
+      background-color: #f0f8ff;
+    }
+    .lesson-part.completed {
+      background-color: #e0ffe0;
+      cursor: default;
+    }
+    .button {
+      margin: 10px;
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .button.hidden {
+      display: none;
+    }
+    .button:hover {
+      background-color: #2980b9;
+    }
+    .quiz-options button {
+      display: block;
+      margin: 10px auto;
+    }
+    .results {
+      font-weight: bold;
+      color: #2ecc71;
+    }
+  </style>
+</head>
+<body>
+  <h1>Living Meaningfully in Virtual Worlds</h1>
+
+  <!-- Lesson Section -->
+  <div id="lesson" class="section visible">
+    <h2>Lesson: Why Life in Virtual Worlds Can Be Meaningful</h2>
+    <p>David Chalmers argues that life in virtual worlds can be meaningful. Explore the following three aspects to learn why:</p>
+    
+    <div id="lesson-relationships" class="lesson-part" onclick="showLesson('relationships')">
+      <h3>1. Relationships</h3>
+      <p>Click to learn about relationships in virtual worlds.</p>
+    </div>
+    
+    <div id="lesson-creativity" class="lesson-part" onclick="showLesson('creativity')">
+      <h3>2. Creativity</h3>
+      <p>Click to learn about creativity in virtual worlds.</p>
+    </div>
+    
+    <div id="lesson-achievements" class="lesson-part" onclick="showLesson('achievements')">
+      <h3>3. Achievements</h3>
+      <p>Click to learn about achievements in virtual worlds.</p>
+    </div>
+    
+    <button id="proceed-button" class="button hidden" onclick="showSection('quiz')">Proceed to Quiz</button>
+  </div>
+
+  <!-- Quiz Section -->
+  <div id="quiz" class="section">
+    <h2>Quiz: Would You Find Meaning in Virtual Worlds?</h2>
+    <p id="quiz-question"></p>
+    <div class="quiz-options"></div>
+  </div>
+
+  <!-- Results Section -->
+  <div id="results" class="section">
+    <h2>Your Results</h2>
+    <p class="results" id="result-text"></p>
+    <button class="button" onclick="restart()">Restart</button>
+  </div>
+
+  <script>
+    // State Variables
+    let exploredSections = {
+      relationships: false,
+      creativity: false,
+      achievements: false
+    };
+    let currentQuestionIndex = 0;
+    let totalScore = 0;
+
+    // Quiz Data
+    const quizQuestions = [
+      {
+        question: "Would relationships in a virtual world feel as real as in physical reality?",
+        options: ["Yes, they can", "No, they wouldn't"],
+        scores: [10, 0]
+      },
+      {
+        question: "Can creating art in a virtual world feel as meaningful as in real life?",
+        options: ["Yes, creativity is universal", "No, it lacks authenticity"],
+        scores: [10, 0]
+      },
+      {
+        question: "Do you believe achievements in virtual worlds count as real achievements?",
+        options: ["Yes, effort makes them real", "No, they're just illusions"],
+        scores: [10, 0]
+      }
+    ];
+
+    // Show a specific lesson
+    function showLesson(lesson) {
+      if (!exploredSections[lesson]) {
+        exploredSections[lesson] = true;
+        const lessonPart = document.getElementById(`lesson-${lesson}`);
+        lessonPart.classList.add('completed');
+
+        let explanation = '';
+        switch (lesson) {
+          case 'relationships':
+            explanation = `<p>In virtual worlds, relationships can feel as real and meaningful as in physical life. Shared emotions and experiences transcend the medium.</p>
+            <p><strong>Example:</strong> A long-distance couple might build a virtual world home and interact daily, deepening their bond.</p>`;
+            break;
+          case 'creativity':
+            explanation = `<p>Virtual worlds unlock unlimited potential for creativity. Artists and storytellers can build entire worlds or new art forms.</p>
+            <p><strong>Example:</strong> An artist might use virtual tools to sculpt 3D masterpieces that people can explore interactively.</p>`;
+            break;
+          case 'achievements':
+            explanation = `<p>Achievements in virtual worlds represent real effort, skill, and satisfaction.</p>
+            <p><strong>Example:</strong> A gamer competing in global eSports tournaments can feel genuine pride in their accomplishments.</p>`;
+            break;
+        }
+
+        lessonPart.innerHTML += explanation;
+        checkAllExplored();
+      }
+    }
+
+    // Check if all lesson parts are explored
+    function checkAllExplored() {
+      const allExplored = Object.values(exploredSections).every(Boolean);
+      if (allExplored) {
+        document.getElementById('proceed-button').classList.remove('hidden');
+      }
+    }
+
+    // Show a section by ID
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(section => section.classList.remove('visible'));
+      document.getElementById(id).classList.add('visible');
+      if (id === 'quiz') {
+        loadQuestion();
+      }
+    }
+
+    // Load quiz question
+    function loadQuestion() {
+      const questionData = quizQuestions[currentQuestionIndex];
+      document.getElementById('quiz-question').textContent = questionData.question;
+      const optionsDiv = document.querySelector('.quiz-options');
+      optionsDiv.innerHTML = ''; // Clear previous options
+      questionData.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.textContent = option;
+        button.className = 'button';
+        button.onclick = () => selectAnswer(questionData.scores[index]);
+        optionsDiv.appendChild(button);
+      });
+    }
+
+    // Handle quiz answer
+    function selectAnswer(score) {
+      totalScore += score;
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizQuestions.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    // Show quiz results
+    function showResults() {
+      showSection('results');
+      const resultText = document.getElementById('result-text');
+      if (totalScore >= 20) {
+        resultText.textContent = "You believe life in virtual worlds can be meaningful. Experiences and engagement matter more to you than the medium.";
+      } else {
+        resultText.textContent = "You don't believe virtual worlds can fully replace the meaning of physical life.";
+      }
+    }
+
+    // Restart the game
+    function restart() {
+      currentQuestionIndex = 0;
+      totalScore = 0;
+      exploredSections = { relationships: false, creativity: false, achievements: false };
+      document.querySelectorAll('.lesson-part').forEach(part => {
+        part.classList.remove('completed');
+        part.innerHTML = part.innerHTML.split('<p>')[0];
+      });
+      document.getElementById('proceed-button').classList.add('hidden');
+      showSection('lesson');
+    }
+  </script>
+</body>
+</html>
